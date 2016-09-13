@@ -134,7 +134,7 @@ then
 fi 
 # collect unixbench results
 unixbench_str=$(grep "System Benchmarks Index Score" $log_path)
-unixbench_tag="Unixbench Score:"
+unixbench_tag="Unixbench Score"
 unixbench_score=${unixbench_str##*e}
 
 
@@ -149,25 +149,25 @@ fi
 # collect stream results
 
 Stream_Copy_str=$(grep Function $log_path)
-Stream_Copy_tag="Stream Copy:"
+Stream_Copy_tag="Stream Copy"
 Stream_Copy_score=0
 count=0
 for element in $Stream_Copy_str; do if [ $count = 2 ]; then  Stream_Copy_score=$element ; break; fi; count=$(($count+1)); done
 
 Stream_Scale_str=$(grep Scale: $log_path)
-Stream_Scale_tag="Stream SCale:"
+Stream_Scale_tag="Stream SCale"
 Stream_Scale_score=0
 count=0
 for element in $Stream_Scale_str; do if [ $count = 2 ]; then  Stream_Scale_score=$element ; break; fi; count=$(($count+1)); done
 
 Stream_Add_str=$(grep Add: $log_path)
-Stream_Add_tag="Stream Add:"
+Stream_Add_tag="Stream Add"
 Stream_Add_score=0
 count=0
 for element in $Stream_Add_str; do if [ $count = 2 ]; then  Stream_Add_score=$element ; break; fi; count=$(($count+1)); done
 
 Stream_Triad_str=$(grep Triad: $log_path)
-Stream_Triad_tag="Stream Triad:"
+Stream_Triad_tag="Stream Triad"
 Stream_Triad_score=0
 count=0
 for element in $Stream_Triad_str; do if [ $count = 2 ]; then  Stream_Triad_score=$element ; break; fi; count=$(($count+1)); done
@@ -177,7 +177,7 @@ for element in $Stream_Triad_str; do if [ $count = 2 ]; then  Stream_Triad_score
  
 
 # /*****************************************Run IOzone*************************************************/
-Iozone_Write_tag="Initial Write:"
+Iozone_Write_tag="Initial Write"
 Iozone_Write_str_2G=""
 Iozone_Write_score_2G=0
 Iozone_Write_str_4G=""
@@ -191,7 +191,7 @@ Iozone_Write_score_10G=0
 
 
 
-Iozone_ReWrite_tag="Rewrite:"
+Iozone_ReWrite_tag="Rewrite"
 Iozone_ReWrite_str_2G=""
 Iozone_ReWrite_score_2G=0
 Iozone_ReWrite_str_4G=""
@@ -205,7 +205,7 @@ Iozone_ReWrite_score_10G=0
 
 
 
-Iozone_Read_tag="Read:"
+Iozone_Read_tag="Read"
 Iozone_Read_str_2G=""
 Iozone_Read_score_2G=0
 Iozone_Read_str_4G=""
@@ -219,7 +219,7 @@ Iozone_Read_score_10G=0
 
 
 
-Iozone_ReRead_tag="ReRead:"
+Iozone_ReRead_tag="ReRead"
 Iozone_ReRead_str_2G=""
 Iozone_ReRead_score_2G=0
 Iozone_ReRead_str_4G=""
@@ -282,9 +282,12 @@ Iozone_ReWrite_score=$(echo "scale=2; ($Iozone_ReWrite_score_2G+$Iozone_ReWrite_
 Iozone_Read_score=$(echo "scale=2; ($Iozone_Read_score_2G+$Iozone_Read_score_4G+$Iozone_Read_score_6G+$Iozone_Read_score_8G+$Iozone_Read_score_10G)/5" | bc -l)
 Iozone_ReRead_score=$(echo "scale=2; ($Iozone_ReRead_str_2G+$Iozone_ReRead_score_4G+$Iozone_ReRead_score_6G+$Iozone_ReRead_score_8G+$Iozone_ReRead_score_10G)/5" | bc -l)
 
+benchmark_tag="becnchmark result"
+benchmark_score=1
 
 echo 
-"{    
+"{ 
+    $benchmark_tag:$benchmark_score ,
     $unixbench_tag:$unixbench_score ,
     $Stream_Copy_tag:$Stream_Copy_score ,
     $Stream_Scale_tag:$Stream_Scale_score ,
