@@ -135,8 +135,11 @@ fi
 # collect unixbench results
 unixbench_str=$(grep "System Benchmarks Index Score" $log_path)
 unixbench_tag="Unixbench Score"
-unixbench_score=${unixbench_str##*e}
-
+unixbench_score_str=${unixbench_str##*e}
+for element in $unixbench_score_str
+do
+unixbench_score=$element
+done
 
 # /*****************************************Run Stream*************************************************/
 if [ $MEM_BENCHMK_ON -eq 1 ]
@@ -244,7 +247,7 @@ then
     for filesize in 2 4 6 8 10
     do
 	 echo 3 > /proc/sys/vm/drop_caches 
-         ./iozone -t 1 -s ${filesize}"G" -r 1M  -i 0 -i 1 -F result/TempFile.dat  -Rb $result_dir/${timestamp}"-"${filesize}"G".xls
+         ./iozone -t 1 -s ${filesize}"G" -r 1M  -i 0 -i 1 -F TempFile.dat  -Rb $result_dir/${timestamp}"-"${filesize}"G".xls
          sleep 100s
          if [ $filesize = 2 ]; then  
                Iozone_Write_str_2G=$(grep "Initial write" $log_path);  Iozone_Write_score_2G=${Iozone_Write_str_2G##*"\""};
@@ -266,7 +269,7 @@ then
                Iozone_ReWrite_str_8G=$(grep "Rewrite" $log_path);      Iozone_ReWrite_score_8G=${Iozone_ReWrite_str_2G##*"\""};
                Iozone_Read_str_8G=$(grep "Read" $log_path);            Iozone_Read_score_8G=${Iozone_Read_str_2G##*"\""};
                Iozone_ReRead_str_8G=$(grep "Re-read" $log_path);       Iozone_ReRead_score_8G=${Iozone_ReRead_str_2G##*"\""};
-         else [ $filesize = 10 ]; then  
+         elif [ $filesize = 10 ]; then  
                Iozone_Write_str_10G=$(grep "Initial write" $log_path);  Iozone_Write_score_10G=${Iozone_Write_str_2G##*"\""};
                Iozone_ReWrite_str_10G=$(grep "Rewrite" $log_path);      Iozone_ReWrite_score_10G=${Iozone_ReWrite_str_2G##*"\""};
                Iozone_Read_str_10G=$(grep "Read" $log_path);            Iozone_Read_score_10G=${Iozone_Read_str_2G##*"\""};
@@ -280,23 +283,23 @@ fi
 Iozone_Write_score=$(echo "scale=2; ($Iozone_Write_score_2G+$Iozone_Write_score_4G+$Iozone_Write_score_6G+$Iozone_Write_score_8G+$Iozone_Write_score_10G)/5" | bc -l)
 Iozone_ReWrite_score=$(echo "scale=2; ($Iozone_ReWrite_score_2G+$Iozone_ReWrite_score_4G+$Iozone_ReWrite_score_6G+$Iozone_ReWrite_score_8G+$Iozone_ReWrite_score_10G)/5" | bc -l)
 Iozone_Read_score=$(echo "scale=2; ($Iozone_Read_score_2G+$Iozone_Read_score_4G+$Iozone_Read_score_6G+$Iozone_Read_score_8G+$Iozone_Read_score_10G)/5" | bc -l)
-Iozone_ReRead_score=$(echo "scale=2; ($Iozone_ReRead_str_2G+$Iozone_ReRead_score_4G+$Iozone_ReRead_score_6G+$Iozone_ReRead_score_8G+$Iozone_ReRead_score_10G)/5" | bc -l)
+Iozone_ReRead_score=$(echo "scale=2; ($Iozone_ReRead_score_2G+$Iozone_ReRead_score_4G+$Iozone_ReRead_score_6G+$Iozone_ReRead_score_8G+$Iozone_ReRead_score_10G)/5" | bc -l)
 
 benchmark_tag="becnchmark result"
 benchmark_score=1
 
-echo 
-"{ 
-    $benchmark_tag:$benchmark_score ,
-    $unixbench_tag:$unixbench_score ,
-    $Stream_Copy_tag:$Stream_Copy_score ,
-    $Stream_Scale_tag:$Stream_Scale_score ,
-    $Stream_Add_tag:$Stream_Add_score ,
-    $Stream_Triad_tag:$Stream_Triad_score ,
-    $Iozone_Write_tag:$Iozone_Write_score ,
-    $Iozone_ReWrite_tag:$Iozone_ReWrite_score ,
-    $Iozone_Read_tag:$Iozone_Read_score ,
-    $Iozone_ReRead_tag:$Iozone_ReRead_score
+echo "{ 
+    \"$benchmark_tag\":\"$benchmark_score\" ,
+    $unixbench_tag:\"$unixbench_score\" ,
+    $Stream_Copy_tag:\"$Stream_Copy_score\" ,
+    $Stream_Scale_tag:\"$Stream_Scale_score\" ,
+    $Stream_Add_tag:\"$Stream_Add_score\" ,
+    $Stream_Triad_tag:\"$Stream_Triad_score\" ,
+    $Iozone_Write_tag:\"$Iozone_Write_score\" ,
+    $Iozone_ReWrite_tag:\"$Iozone_ReWrite_score\" ,
+    $Iozone_Read_tag:\"$Iozone_Read_score\" ,
+    $Iozone_ReRead_tag:\"$Iozone_ReRead_score\",
+    \"END\":\"END\"
 }" > $result_path
 
 
