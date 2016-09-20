@@ -133,7 +133,7 @@ then
     ./Run
 fi 
 # collect unixbench results
-unixbench_str=$(grep "System Benchmarks Index Score" $log_path)
+unixbench_str=$(grep "System Benchmarks Index Score" $log_path | tail -1)
 unixbench_tag="UnixbenchScore"
 unixbench_score_str=${unixbench_str##*e}
 for element in $unixbench_score_str
@@ -151,25 +151,25 @@ fi
 
 # collect stream results
 
-Stream_Copy_str=$(grep Copy: $log_path)
+Stream_Copy_str=$(grep Copy: $log_path | tail -1)
 Stream_Copy_tag="StreamCopy"
 Stream_Copy_score=0
 count=0
 for element in $Stream_Copy_str; do if [ $count = 2 ]; then  Stream_Copy_score=$element ; break; fi; count=$(($count+1)); done
 
-Stream_Scale_str=$(grep Scale: $log_path)
+Stream_Scale_str=$(grep Scale: $log_path | tail -1)
 Stream_Scale_tag="StreamSCale"
 Stream_Scale_score=0
 count=0
 for element in $Stream_Scale_str; do if [ $count = 2 ]; then  Stream_Scale_score=$element ; break; fi; count=$(($count+1)); done
 
-Stream_Add_str=$(grep Add: $log_path)
+Stream_Add_str=$(grep Add: $log_path | tail -1)
 Stream_Add_tag="StreamAdd"
 Stream_Add_score=0
 count=0
 for element in $Stream_Add_str; do if [ $count = 2 ]; then  Stream_Add_score=$element ; break; fi; count=$(($count+1)); done
 
-Stream_Triad_str=$(grep Triad: $log_path)
+Stream_Triad_str=$(grep Triad: $log_path | tail -1)
 Stream_Triad_tag="StreamTriad"
 Stream_Triad_score=0
 count=0
@@ -250,30 +250,30 @@ then
          ./iozone -t 1 -s ${filesize}"G" -r 1M  -i 0 -i 1 -F TempFile.dat  -Rb $result_dir/${timestamp}"-"${filesize}"G".xls
          sleep 100s
          if [ $filesize = 2 ]; then  
-               Iozone_Write_str_2G=$(grep "Initial write" $log_path);  Iozone_Write_score_2G=${Iozone_Write_str_2G##*"\""};
-               Iozone_ReWrite_str_2G=$(grep "Rewrite" $log_path);      Iozone_ReWrite_score_2G=${Iozone_ReWrite_str_2G##*"\""};
-               Iozone_Read_str_2G=$(grep "Read" $log_path);            Iozone_Read_score_2G=${Iozone_Read_str_2G##*"\""};
-               Iozone_ReRead_str_2G=$(grep "Re-read" $log_path);       Iozone_ReRead_score_2G=${Iozone_ReRead_str_2G##*"\""};
+               Iozone_Write_str_2G=$(grep "Initial write" $log_path | tail -1);  Iozone_Write_score_2G=${Iozone_Write_str_2G##*"\""};
+               Iozone_ReWrite_str_2G=$(grep "Rewrite" $log_path | tail -1);      Iozone_ReWrite_score_2G=${Iozone_ReWrite_str_2G##*"\""};
+               Iozone_Read_str_2G=$(grep "Read" $log_path | tail -1);            Iozone_Read_score_2G=${Iozone_Read_str_2G##*"\""};
+               Iozone_ReRead_str_2G=$(grep "Re-read" $log_path | tail -1);       Iozone_ReRead_score_2G=${Iozone_ReRead_str_2G##*"\""};
          elif [ $filesize = 4 ]; then  
-               Iozone_Write_str_4G=$(grep "Initial write" $log_path);  Iozone_Write_score_4G=${Iozone_Write_str_2G##*"\""};
-               Iozone_ReWrite_str_4G=$(grep "Rewrite" $log_path);      Iozone_ReWrite_score_4G=${Iozone_ReWrite_str_2G##*"\""};
-               Iozone_Read_str_4G=$(grep "Read" $log_path);            Iozone_Read_score_4G=${Iozone_Read_str_2G##*"\""};
-               Iozone_ReRead_str_4G=$(grep "Re-read" $log_path);       Iozone_ReRead_score_4G=${Iozone_ReRead_str_2G##*"\""};
+               Iozone_Write_str_4G=$(grep "Initial write" $log_path | tail -1);  Iozone_Write_score_4G=${Iozone_Write_str_2G##*"\""};
+               Iozone_ReWrite_str_4G=$(grep "Rewrite" $log_path | tail -1);      Iozone_ReWrite_score_4G=${Iozone_ReWrite_str_2G##*"\""};
+               Iozone_Read_str_4G=$(grep "Read" $log_path | tail -1);            Iozone_Read_score_4G=${Iozone_Read_str_2G##*"\""};
+               Iozone_ReRead_str_4G=$(grep "Re-read" $log_path | tail -1);       Iozone_ReRead_score_4G=${Iozone_ReRead_str_2G##*"\""};
          elif [ $filesize = 6 ]; then  
-               Iozone_Write_str_6G=$(grep "Initial write" $log_path);  Iozone_Write_score_6G=${Iozone_Write_str_2G##*"\""};
-               Iozone_ReWrite_str_6G=$(grep "Rewrite" $log_path);      Iozone_ReWrite_score_6G=${Iozone_ReWrite_str_2G##*"\""};
-               Iozone_Read_str_6G=$(grep "Read" $log_path);            Iozone_Read_score_6G=${Iozone_Read_str_2G##*"\""};
-               Iozone_ReRead_str_6G=$(grep "Re-read" $log_path);       Iozone_ReRead_score_6G=${Iozone_ReRead_str_2G##*"\""};
+               Iozone_Write_str_6G=$(grep "Initial write" $log_path | tail -1);  Iozone_Write_score_6G=${Iozone_Write_str_2G##*"\""};
+               Iozone_ReWrite_str_6G=$(grep "Rewrite" $log_path | tail -1);      Iozone_ReWrite_score_6G=${Iozone_ReWrite_str_2G##*"\""};
+               Iozone_Read_str_6G=$(grep "Read" $log_path | tail -1);            Iozone_Read_score_6G=${Iozone_Read_str_2G##*"\""};
+               Iozone_ReRead_str_6G=$(grep "Re-read" $log_path | tail -1);       Iozone_ReRead_score_6G=${Iozone_ReRead_str_2G##*"\""};
          elif [ $filesize = 8 ]; then  
-               Iozone_Write_str_8G=$(grep "Initial write" $log_path);  Iozone_Write_score_8G=${Iozone_Write_str_2G##*"\""};
-               Iozone_ReWrite_str_8G=$(grep "Rewrite" $log_path);      Iozone_ReWrite_score_8G=${Iozone_ReWrite_str_2G##*"\""};
-               Iozone_Read_str_8G=$(grep "Read" $log_path);            Iozone_Read_score_8G=${Iozone_Read_str_2G##*"\""};
-               Iozone_ReRead_str_8G=$(grep "Re-read" $log_path);       Iozone_ReRead_score_8G=${Iozone_ReRead_str_2G##*"\""};
+               Iozone_Write_str_8G=$(grep "Initial write" $log_path | tail -1);  Iozone_Write_score_8G=${Iozone_Write_str_2G##*"\""};
+               Iozone_ReWrite_str_8G=$(grep "Rewrite" $log_path | tail -1);      Iozone_ReWrite_score_8G=${Iozone_ReWrite_str_2G##*"\""};
+               Iozone_Read_str_8G=$(grep "Read" $log_path | tail -1);            Iozone_Read_score_8G=${Iozone_Read_str_2G##*"\""};
+               Iozone_ReRead_str_8G=$(grep "Re-read" $log_path | tail -1);       Iozone_ReRead_score_8G=${Iozone_ReRead_str_2G##*"\""};
          elif [ $filesize = 10 ]; then  
-               Iozone_Write_str_10G=$(grep "Initial write" $log_path);  Iozone_Write_score_10G=${Iozone_Write_str_2G##*"\""};
-               Iozone_ReWrite_str_10G=$(grep "Rewrite" $log_path);      Iozone_ReWrite_score_10G=${Iozone_ReWrite_str_2G##*"\""};
-               Iozone_Read_str_10G=$(grep "Read" $log_path);            Iozone_Read_score_10G=${Iozone_Read_str_2G##*"\""};
-               Iozone_ReRead_str_10G=$(grep "Re-read" $log_path);       Iozone_ReRead_score_10G=${Iozone_ReRead_str_2G##*"\""};
+               Iozone_Write_str_10G=$(grep "Initial write" $log_path | tail -1);  Iozone_Write_score_10G=${Iozone_Write_str_2G##*"\""};
+               Iozone_ReWrite_str_10G=$(grep "Rewrite" $log_path | tail -1);      Iozone_ReWrite_score_10G=${Iozone_ReWrite_str_2G##*"\""};
+               Iozone_Read_str_10G=$(grep "Read" $log_path | tail -1);            Iozone_Read_score_10G=${Iozone_Read_str_2G##*"\""};
+               Iozone_ReRead_str_10G=$(grep "Re-read" $log_path | tail -1);       Iozone_ReRead_score_10G=${Iozone_ReRead_str_2G##*"\""};
          fi;               
  
          sleep 100s
@@ -301,17 +301,6 @@ echo "{
     \"$Iozone_ReRead_tag\":\"$Iozone_ReRead_score\",
     \"END\":\"END\"
 }" > $result_path
-
-
-
-
-
-#grep "System Benchmarks Index Score" $log_path > $result_path 
-#grep Function $log_path >> $result_path
-#grep Copy: $log_path >> $result_path
-#grep Scale: $log_path >> $result_path
-#grep Add: $log_path >> $result_path
-#grep Triad: $log_path >> $result_path
 
 # terminiate pipe and restore stdoutput and stderr
 printf "\015"
