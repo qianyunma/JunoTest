@@ -30,23 +30,44 @@ fi
 
 unixbench_tag="UnixbenchScore"
 unixbench_score=` echo $benchmark_result_string | jq '.'${unixbench_tag}'' `
+unixbench_score=`echo $unixbench_score | sed 's/\"//g'`
+
 Stream_Copy_tag="StreamCopy"
 Stream_Copy_score=` echo $benchmark_result_string | jq '.'${Stream_Copy_tag}'' `
+Stream_Copy_score=`echo $Stream_Copy_score | sed 's/\"//g'`
+
 Stream_Scale_tag="StreamSCale"
 Stream_Scale_score=` echo $benchmark_result_string | jq '.'${Stream_Scale_tag}'' `
+Stream_Scale_score=`echo $Stream_Scale_score | sed 's/\"//g'`
+
 Stream_Add_tag="StreamAdd"
 Stream_Add_score=` echo $benchmark_result_string | jq '.'${Stream_Add_tag}'' `
+Stream_Add_score=`echo $Stream_Add_score | sed 's/\"//g'`
+
 Stream_Triad_tag="StreamTriad"
 Stream_Triad_score=` echo $benchmark_result_string | jq '.'${Stream_Triad_tag}'' `
+Stream_Triad_score=`echo $Stream_Triad_score | sed 's/\"//g'`
+
 Iozone_Write_tag="InitialWrite"
 Iozone_Write_score=` echo $benchmark_result_string | jq '.'${Iozone_Write_tag}'' `
+Iozone_Write_score=`echo $Iozone_Write_score | sed 's/\"//g'`
+
 Iozone_ReWrite_tag="Rewrite"
 Iozone_ReWrite_score=` echo $benchmark_result_string | jq '.'${Iozone_ReWrite_tag}'' `
+Iozone_ReWrite_score=`echo $Iozone_ReWrite_score | sed 's/\"//g'`
+
 Iozone_Read_tag="Read"
 Iozone_Read_score=` echo $benchmark_result_string | jq '.'${Iozone_Read_tag}'' `
+Iozone_Read_score=`echo $Iozone_Read_score | sed 's/\"//g'`
+
 Iozone_ReRead_tag="ReRead"
 Iozone_ReRead_score=` echo $benchmark_result_string | jq '.'${Iozone_ReRead_tag}'' `
+Iozone_ReRead_score=`echo $Iozone_ReRead_score | sed 's/\"//g'`
 
 echo -e "Cpu Test Result:\n\t"${unixbench_tag}"\t"${unixbench_score}"\n"
 echo -e "Memory Test Result(s):\n\t"${Stream_Copy_tag}"\t"${Stream_Copy_score}"\n\t"${Stream_Scale_tag}"\t"${Stream_Scale_score}"\n\t"${Stream_Add_tag}"\t"${Stream_Add_score}"\n\t"${Stream_Triad_tag}"\t"${Stream_Triad_score}"\n"
 echo -e "IO Test Speed Result(MB/S):\n\t"${Iozone_Write_tag}"\t"${Iozone_Write_score}"\n\t"${Iozone_ReWrite_tag}"\t\t"${Iozone_ReWrite_score}"\n\t"${Iozone_Read_tag}"\t\t"${Iozone_Read_score}"\n\t"${Iozone_ReRead_tag}"\t\t"${Iozone_ReRead_score}"\n"
+
+
+
+
