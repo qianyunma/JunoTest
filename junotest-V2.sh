@@ -102,9 +102,9 @@ do
         echo 3 > /proc/sys/vm/drop_caches 
         sleep 60s
         time -p (python tut_detsim.py --evtmax $j gun >> $result_sim )
-        eval ''Detsim_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
-        temp_time=$(eval echo '$'Detsim_${j}_round${i}'')
-        eval Detsim_${j}_round${i}=${temp_time##*" "}
+        eval ''DetSim_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
+        temp_time=$(eval echo '$'DetSim_${j}_round${i}'')
+        eval DetSim_${j}_round${i}=${temp_time##*" "}
 
         echo 3 > /proc/sys/vm/drop_caches
         sleep 60s
@@ -136,10 +136,10 @@ done
 #calculate job average time
 for j in $instance
 do
-    eval ''DetSim_${j}_time'=0'
-    eval ''Det2Elec_${j}_time'=0'
-    eval ''Elec2Calib_${j}_time'=0'
-    eval ''Calib2Rec_${j}_time'=0'
+    eval DetSim_${j}_time=0
+    eval Det2Elec_${j}_time=0
+    eval Elec2Calib_${j}_time=0
+    eval Calib2Rec_${j}_time=0
     
     for (( i=0; i<$round; i++ ))
     do 
@@ -174,7 +174,7 @@ do
             
 done
 
-echo "  \"end\":\"end\"
+echo "  \"END\":\"END\"
 }" >> $result_path
 
 
