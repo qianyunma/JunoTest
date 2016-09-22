@@ -11,6 +11,8 @@ JunoScript=/JUNOTest
 
 
 # Set Env vars & Copy Juno scripts from read-only /cvmfs dir to executable
+yum install fftw-devel
+
 source /cvmfs/juno.ihep.ac.cn/sl6_amd64_gcc44/J16v2r1-Pre2/setup.sh 
 #cp -r /cvmfs/juno.ihep.ac.cn/sl6_amd64_gcc44/J16v2r1-Pre2/offline/ $JunoScript 
 cd $JunoScript/offline/Examples/Tutorial/share/ 
@@ -97,22 +99,22 @@ do
     for (( i=0; i<$round; i++ ))
     do 
         echo 3 > /proc/sys/vm/drop_caches 
-        time -p (python tut_detsim.py --evtmax $j gun > $result_sim )
+        time -p (python tut_detsim.py --evtmax $j gun >> $result_sim )
         eval ''Detsim_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
 
         echo 3 > /proc/sys/vm/drop_caches
         sleep 60s
-        time -p (python tut_det2elec.py --evtmax $j > $result_elec )
+        time -p (python tut_det2elec.py --evtmax $j >> $result_elec )
         eval ''Det2Elec_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
 
         echo 3 > /proc/sys/vm/drop_caches
         sleep 60s
-        time -p (python tut_elec2calib.py --evtmax $j > $result_calib )
+        time -p (python tut_elec2calib.py --evtmax $j >> $result_calib )
         eval ''Elec2Calib_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
 
         echo 3 > /proc/sys/vm/drop_caches
         sleep 60s
-        time -p (python tut_calib2rec.py --evtmax $j > $result_rec )
+        time -p (python tut_calib2rec.py --evtmax $j >> $result_rec )
         eval ''Calib2Rec_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
 
         rm -f *.root
@@ -147,26 +149,24 @@ done
 
 
 
-echo 
-"{ \"junotest_result\":\"1\" ,
+echo "{ \"junotest_result\":\"1\" ,
    \"instance_length\":"\""$instance_length"\"" ,
 "  > $result_path
 
 count=0
 for j in $instance
 do
-  count++;
-  eval echo '\"instance_Number_${count}\":\"$j\" ,
-            \"DetSim_${j}_time\":\"$'DetSim_${j}_time'\" ,
-            \"DetSim_${j}_time\":\"$'DetSim_${j}_time'\" ,
-            \"Det2Elec_${j}_time\":\"$'Det2Elec_${j}_time'\" ,
-            \"Elec2Calib_${j}_time\":\"$'Elec2Calib_${j}_time'\" ,
-            \"Calib2Rec_${j}_time\":\"$'Calib2Rec_${j}_time'\" ,
-            ' >> $result_path
+  ((count++));
+  eval echo '\"instance_Number_${count}\":\"$j\" , ' >> $result_path
+  eval echo '\"DetSim_${j}_time\":\"$'DetSim_${j}_time'\" , ' >> $result_path
+  eval echo '\"DetSim_${j}_time\":\"$'DetSim_${j}_time'\" , ' >> $result_path
+  eval echo '\"Det2Elec_${j}_time\":\"$'Det2Elec_${j}_time'\" , ' >> $result_path
+  eval echo '\"Elec2Calib_${j}_time\":\"$'Elec2Calib_${j}_time'\" , ' >> $result_path
+  eval echo '\"Calib2Rec_${j}_time\":\"$'Calib2Rec_${j}_time'\" , ' >> $result_path
+            
 done
 
-echo    
-"\"end\":\"end\"
+echo "\"end\":\"end\"
 }" >> $result_path
 
 
