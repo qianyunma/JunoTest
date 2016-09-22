@@ -103,21 +103,29 @@ do
         sleep 60s
         time -p (python tut_detsim.py --evtmax $j gun >> $result_sim )
         eval ''Detsim_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
+        temp_time=$(eval echo '$'Detsim_${j}_round${i}'')
+        eval Detsim_${j}_round${i}=${temp_time##*" "}
 
         echo 3 > /proc/sys/vm/drop_caches
         sleep 60s
         time -p (python tut_det2elec.py --evtmax $j >> $result_elec )
         eval ''Det2Elec_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
+        temp_time=$(eval echo '$'Det2Elec_${j}_round${i}'')
+        eval Det2Elec_${j}_round${i}=${temp_time##*" "}
 
         echo 3 > /proc/sys/vm/drop_caches
         sleep 60s
         time -p (python tut_elec2calib.py --evtmax $j >> $result_calib )
         eval ''Elec2Calib_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
+        temp_time=$(eval echo '$'Elec2Calib_${j}_round${i}'')
+        eval Elec2Calib_${j}_round${i}=${temp_time##*" "}
 
         echo 3 > /proc/sys/vm/drop_caches
         sleep 60s
         time -p (python tut_calib2rec.py --evtmax $j >> $result_rec )
         eval ''Calib2Rec_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
+        temp_time=$(eval echo '$'Calib2Rec_${j}_round${i}'')
+        eval Calib2Rec_${j}_round${i}=${temp_time##*" "}
 
         rm -f *.root
         echo 3 > /proc/sys/vm/drop_caches
