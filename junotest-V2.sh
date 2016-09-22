@@ -98,7 +98,9 @@ for j in $instance
 do
     for (( i=0; i<$round; i++ ))
     do 
+        rm -f *.root
         echo 3 > /proc/sys/vm/drop_caches 
+        sleep 60s
         time -p (python tut_detsim.py --evtmax $j gun >> $result_sim )
         eval ''Detsim_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
 
@@ -119,7 +121,6 @@ do
 
         rm -f *.root
         echo 3 > /proc/sys/vm/drop_caches
-        sleep 60s
     done
     instance_length=$[$instance_length+1]
 done
@@ -134,39 +135,38 @@ do
     
     for (( i=0; i<$round; i++ ))
     do 
-        eval ''DetSim_${j}_time'=$(echo "scale=2;($'DetSim_${j}_time'+$'DetSim_${j}_round${i}')" |bc -l )'
-        eval ''Det2Elec_${j}_time'=$(echo "scale=2;($'Det2Elec_${j}_time'+$'Det2Elec_${j}_round${i}')" |bc -l )'
-        eval ''Elec2Calib_${j}_time'=$(echo "scale=2;($'Elec2Calib_${j}_time'+$'Elec2Calib_${j}_round${i}')" |bc -l )'
-        eval ''Calib2Rec_${j}_time'=$(echo "scale=2;($'Calib2Rec_${j}_time'+$'Calib2Rec_${j}_round${i}')" |bc -l )'
+        eval DetSim_${j}_time=$(eval echo '"scale=2;($'DetSim_${j}_time'+$'DetSim_${j}_round${i}')" |bc -l ')
+        eval Det2Elec_${j}_time=$(eval echo '"scale=2;($'Det2Elec_${j}_time'+$'Det2Elec_${j}_round${i}')" |bc -l ')
+        eval Elec2Calib_${j}_time=$(eval echo '"scale=2;($'Elec2Calib_${j}_time'+$'Elec2Calib_${j}_round${i}')" |bc -l ')
+        eval Calib2Rec_${j}_time=$(eval echo '"scale=2;($'Calib2Rec_${j}_time'+$'Calib2Rec_${j}_round${i}')" |bc -l ')
     done
     
-    eval ''DetSim_${j}_time'=$(echo "scale=2;($'DetSim_${j}_time'/$round)" |bc -l )'
-    eval ''Det2Elec_${j}_time'=$(echo "scale=2;($'Det2Elec_${j}_time'/$round)" |bc -l )'
-    eval ''Elec2Calib_${j}_time'=$(echo "scale=2;($'Elec2Calib_${j}_time'/$round)" |bc -l )'
-    eval ''Calib2Rec_${j}_time'=$(echo "scale=2;($'Calib2Rec_${j}_time'/$round)" |bc -l )'
+    eval DetSim_${j}_time=$(eval echo '"scale=2;($'DetSim_${j}_time'/$round)" |bc -l ')
+    eval Det2Elec_${j}_time=$(eval echo '"scale=2;($'Det2Elec_${j}_time'/$round)" |bc -l ')
+    eval Elec2Calib_${j}_time=$(eval echo '"scale=2;($'Elec2Calib_${j}_time'/$round)" |bc -l ')
+    eval Calib2Rec_${j}_time=$(eval echo '"scale=2;($'Calib2Rec_${j}_time'/$round)" |bc -l ')
 
 done
 
 
 
-echo "{ \"junotest_result\":\"1\" ,
-   \"instance_length\":"\""$instance_length"\"" ,
-"  > $result_path
+echo "{ 
+  \"junotest_result\":\"1\" ,
+  \"instance_length\":"\""$instance_length"\"" ,"  > $result_path
 
 count=0
 for j in $instance
 do
-  ((count++));
-  eval echo '\"instance_Number_${count}\":\"$j\" , ' >> $result_path
-  eval echo '\"DetSim_${j}_time\":\"$'DetSim_${j}_time'\" , ' >> $result_path
-  eval echo '\"DetSim_${j}_time\":\"$'DetSim_${j}_time'\" , ' >> $result_path
-  eval echo '\"Det2Elec_${j}_time\":\"$'Det2Elec_${j}_time'\" , ' >> $result_path
-  eval echo '\"Elec2Calib_${j}_time\":\"$'Elec2Calib_${j}_time'\" , ' >> $result_path
-  eval echo '\"Calib2Rec_${j}_time\":\"$'Calib2Rec_${j}_time'\" , ' >> $result_path
+  count=$((count+1))
+  eval echo '"  "\"instance_Number_${count}\":\"$j\" , ' >> $result_path
+  eval echo '"  "\"DetSim_${j}_time\":\"$'DetSim_${j}_time'\" , ' >> $result_path
+  eval echo '"  "\"Det2Elec_${j}_time\":\"$'Det2Elec_${j}_time'\" , ' >> $result_path
+  eval echo '"  "\"Elec2Calib_${j}_time\":\"$'Elec2Calib_${j}_time'\" , ' >> $result_path
+  eval echo '"  "\"Calib2Rec_${j}_time\":\"$'Calib2Rec_${j}_time'\" , ' >> $result_path
             
 done
 
-echo "\"end\":\"end\"
+echo "  \"end\":\"end\"
 }" >> $result_path
 
 
