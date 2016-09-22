@@ -2,10 +2,10 @@
 
 set -o errexit
 set -o pipefail
-set -o nounset
+#set -o nounset
 
 # Set Juno scripts path
-JunoScript=/test_lv
+JunoScript=/JUNOTest
 
 # Check if cvmfs mounted
 
@@ -59,8 +59,8 @@ MEM_Monitor_path=$log_dir/MEM_Monitor/$MEM_Monitor_name
 >$MEM_Monitor_path 
 
 # set instance num and round
-instance=500 1000 1500 2000 2500 3000      # set array
-round=3
+instance="2 4 6 8 10 12"      # set array
+round=1
 
 # Monitor Settings
 MEM_ON=1        # if set mem monitor
@@ -97,27 +97,27 @@ do
     for (( i=0; i<$round; i++ ))
     do 
         echo 3 > /proc/sys/vm/drop_caches 
-        time -p python tut_detsim.py --evtmax $j gun -o $result_sim
-        eval Detsim_${j}_round${i}=\$(grep "real" $log_path | tail -1) 
+        time -p (python tut_detsim.py --evtmax $j gun > $result_sim )
+        eval ''Detsim_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
 
         echo 3 > /proc/sys/vm/drop_caches
-        sleep 100s
-        time -p python tut_det2elec.py --evtmax $j -o $result_elec
-        eval Det2Elec_${j}_round${i}=\$(grep "real" $log_path | tail -1)
+        sleep 60s
+        time -p (python tut_det2elec.py --evtmax $j > $result_elec )
+        eval ''Det2Elec_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
 
         echo 3 > /proc/sys/vm/drop_caches
-        sleep 100s
-        time -p python tut_elec2calib.py --evtmax $j -o $result_calib
-        eval Elec2Calib_${j}_round${i}=\$(grep "real" $log_path | tail -1)
+        sleep 60s
+        time -p (python tut_elec2calib.py --evtmax $j > $result_calib )
+        eval ''Elec2Calib_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
 
         echo 3 > /proc/sys/vm/drop_caches
-        sleep 100s
-        time -p python tut_calib2rec.py --evtmax $j -o $result_rec 
-        eval Calib2Rec_${j}_round${i}=\$(grep "real" $log_path | tail -1)
+        sleep 60s
+        time -p (python tut_calib2rec.py --evtmax $j > $result_rec )
+        eval ''Calib2Rec_${j}_round${i}'=$(grep "real" $log_path | tail -1)'
 
         rm -f *.root
         echo 3 > /proc/sys/vm/drop_caches
-        sleep 100s
+        sleep 60s
     done
     instance_length=$[$instance_length+1]
 done
@@ -125,18 +125,23 @@ done
 #calculate job average time
 for j in $instance
 do
+    eval ''DetSim_${j}_time'=0'
+    eval ''Det2Elec_${j}_time'=0'
+    eval ''Elec2Calib_${j}_time'=0'
+    eval ''Calib2Rec_${j}_time'=0'
+    
     for (( i=0; i<$round; i++ ))
     do 
-        eval DetSim_${j}_time=\$(echo "scale=2;(\$DetSim_${j}_time+\$DetSim_${j}_round${i})" |bc -l )
-        eval Det2Elec_${j}_time=\$(echo "scale=2;(\$Det2Elec_${j}_time+\$Det2Elec_${j}_round${i})" |bc -l )
-        eval Elec2Calib_${j}_time=\$(echo "scale=2;(\$Elec2Calib_${j}_time+\$Elec2Calib_${j}_round${i})" |bc -l )
-        eval Calib2Rec_${j}_time=\$(echo "scale=2;(\$Calib2Rec_${j}_time+\$Calib2Rec_${j}_round${i})" |bc -l )
+        eval ''DetSim_${j}_time'=$(echo "scale=2;($'DetSim_${j}_time'+$'DetSim_${j}_round${i}')" |bc -l )'
+        eval ''Det2Elec_${j}_time'=$(echo "scale=2;($'Det2Elec_${j}_time'+$'Det2Elec_${j}_round${i}')" |bc -l )'
+        eval ''Elec2Calib_${j}_time'=$(echo "scale=2;($'Elec2Calib_${j}_time'+$'Elec2Calib_${j}_round${i}')" |bc -l )'
+        eval ''Calib2Rec_${j}_time'=$(echo "scale=2;($'Calib2Rec_${j}_time'+$'Calib2Rec_${j}_round${i}')" |bc -l )'
     done
     
-    eval DetSim_${j}_time=\$(echo "scale=2;(\$DetSim_${j}_time/\$round)" |bc -l )
-    eval Det2Elec_${j}_time=\$(echo "scale=2;(\$Det2Elec_${j}_time/\$round)" |bc -l )
-    eval Elec2Calib_${j}_time=\$(echo "scale=2;(\$Elec2Calib_${j}_time/\$round)" |bc -l )
-    eval Calib2Rec_${j}_time=\$(echo "scale=2;(\$Calib2Rec_${j}_time/\$round)" |bc -l )
+    eval ''DetSim_${j}_time'=$(echo "scale=2;($'DetSim_${j}_time'/$round)" |bc -l )'
+    eval ''Det2Elec_${j}_time'=$(echo "scale=2;($'Det2Elec_${j}_time'/$round)" |bc -l )'
+    eval ''Elec2Calib_${j}_time'=$(echo "scale=2;($'Elec2Calib_${j}_time'/$round)" |bc -l )'
+    eval ''Calib2Rec_${j}_time'=$(echo "scale=2;($'Calib2Rec_${j}_time'/$round)" |bc -l )'
 
 done
 
@@ -151,16 +156,17 @@ count=0
 for j in $instance
 do
   count++;
-  eval echo "\"instance_Number_${count}\":"\""$j"\"" ,
-            \"DetSim_${j}_time\":"\""\$DetSim_${j}_time"\"" ,
-            \"Det2Elec_${j}_time\":"\""\$Det2Elec_${j}_time"\"" ,
-            \"Elec2Calib_${j}_time\":"\""\$Elec2Calib_${j}_time"\"" ,
-            \"Calib2Rec_${j}_time\":"\""\$Calib2Rec_${j}_time"\"" ,
-            " >> $result_path
+  eval echo '\"instance_Number_${count}\":\"$j\" ,
+            \"DetSim_${j}_time\":\"$'DetSim_${j}_time'\" ,
+            \"DetSim_${j}_time\":\"$'DetSim_${j}_time'\" ,
+            \"Det2Elec_${j}_time\":\"$'Det2Elec_${j}_time'\" ,
+            \"Elec2Calib_${j}_time\":\"$'Elec2Calib_${j}_time'\" ,
+            \"Calib2Rec_${j}_time\":\"$'Calib2Rec_${j}_time'\" ,
+            ' >> $result_path
 done
 
 echo    
-" \"end\":\"end\"
+"\"end\":\"end\"
 }" >> $result_path
 
 
